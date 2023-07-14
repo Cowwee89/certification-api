@@ -2,11 +2,18 @@ import express from 'express'
 
 import { getStudents, getStudent, createStudent } from './database.js'
 import dotenv from 'dotenv'
+import cors from 'cors'
 
 const app = express()
 dotenv.config()
 
 app.use(express.json())
+app.use(express.static("public"));
+app.use(cors());
+
+app.get('/', async (req, res) => {
+  res.send('hello world')
+})
 
 app.get("/students", async (req, res) => {
     console.log("getting students")
