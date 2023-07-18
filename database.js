@@ -56,7 +56,7 @@ export async function createEvent(ename, edate) {
         VALUES (?, ?)
     `, [ename, edate])
     const id = result.insertId
-    return getStudent(id)
+    return getEvent(id)
 }
 
 
@@ -78,12 +78,23 @@ export async function createTestResult(sid, eid, solve_1, solve_2, solve_3, solv
     level_attempted, level_achieved, grade_achieved, name_to_be_printed) {
 
     const [result] = await pool.query(`
-        INSERT INTO test_result (sid, eid, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
+        INSERT INTO test_result (student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
             level_attempted, level_achieved, grade_achieved, name_to_be_printed)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [sid, eid, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
         level_attempted, level_achieved, grade_achieved, name_to_be_printed])
         
     const id = result.insertId
-    return getStudent(id)
+
+    const current_level = getStudent(sid).highest_level
+
+    if (level_achieved > current_level || current_level === undefined) {
+        await pool.query(`
+            UPDATE student
+            SET highest_level = ?, best_grade = ?
+            WHERE id = ?
+        `, [level_achieved, grade_achieved, sid])
+    }
+
+    return getTestResult(id)
 }

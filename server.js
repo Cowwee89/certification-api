@@ -37,8 +37,8 @@ app.get("/students/:id", async (req, res) => {
 })
 
 app.post("/students", async (req, res) => {
-    const { name, level } = req.body
-    const student = await createStudent(name, level)
+    const { sname, birthday } = req.body
+    const student = await createStudent(sname, birthday)
     res.status(201).send(student)
 })
 
@@ -73,10 +73,10 @@ app.get("/testresult/:id", async (req, res) => {
 })
 
 app.post("/testresults", async (req, res) => {
-    const { sid, eid, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
+    const { student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
         level_attempted, level_achieved, grade_achieved, name_to_be_printed } = req.body
-        
-    const testresults = await createTestResult(sid, eid, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
+
+    const testresults = await createTestResult(student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
         level_attempted, level_achieved, grade_achieved, name_to_be_printed)
     res.status(201).send(testresults)
 })
