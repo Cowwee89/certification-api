@@ -37,7 +37,7 @@ export async function createStudent(sname, birthday) {
 
 
 export async function getEvents() {
-    const [rows] = await pool.query('SELECT * FROM event')
+    const [rows] = await pool.query("SELECT * FROM event")
     return rows
 }
 
@@ -86,15 +86,26 @@ export async function createTestResult(sid, eid, solve_1, solve_2, solve_3, solv
         
     const id = result.insertId
 
-    const current_level = getStudent(sid).highest_level
+    let current_level
+    getStudent(1)
+        .then(data => {
+            current_level = data.highest_level
+            console.log(current_level)
+            if (level_achieved > current_level || current_level === undefined) {
+                pool.query(`
+                    UPDATE student
+                    SET highest_level = ?, best_grade = ?
+                    WHERE id = ?
+                `, [level_achieved, grade_achieved, sid])
+            }
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    console.log('asdf')
+    console.log(current_level)
 
-    if (level_achieved > current_level || current_level === undefined) {
-        await pool.query(`
-            UPDATE student
-            SET highest_level = ?, best_grade = ?
-            WHERE id = ?
-        `, [level_achieved, grade_achieved, sid])
-    }
+    
 
     return getTestResult(id)
 }
