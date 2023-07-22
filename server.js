@@ -55,8 +55,8 @@ app.get("/event/:id", async (req, res) => {
 })
 
 app.post("/events", async (req, res) => {
-    const { name, level } = req.body
-    const event = await createEvent(name, level)
+    const { ename, edate } = req.body
+    const event = await createEvent(ename, edate)
     res.status(201).send(event)
 })
 
@@ -81,6 +81,11 @@ app.post("/testresults", async (req, res) => {
     res.status(201).send(testresults)
 })
 
+app.get("/students/search_query=:string", async (req, res) => {
+    const string = req.params.string
+    const students = getStudents(string)
+    res.status(201).send(students)
+})
 
 app.use((err, req, res, next) => {
     console.log("error occured")

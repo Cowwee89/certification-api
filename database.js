@@ -26,6 +26,16 @@ export async function getStudent(id) {
     return row[0]
 }
 
+export async function searchStudent(string) {
+    const [row] = await pool.query(`
+        SELECT *
+        FROM student
+        WHERE sname LIKE ?
+    `, [`%${string}%`])
+    console.log('hi again')
+    return row[0]
+}
+
 export async function createStudent(sname, birthday) {
     const [result] = await pool.query(`
         INSERT INTO student (sname, birthday)
