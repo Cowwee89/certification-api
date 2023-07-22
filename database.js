@@ -12,18 +12,22 @@ const pool = mysql.createPool({
 }).promise()
 
 
+
+/** STUDENT ENDPOINTS */
+
+
 export async function getStudents() {
     const [rows] = await pool.query("SELECT * FROM student")
     return rows
 }
 
 export async function getStudent(id) {
-    const [row] = await pool.query(`
+    const [rows] = await pool.query(`
         SELECT *
         FROM student
         WHERE id = ?
     `, [id])
-    return row[0]
+    return rows[0]
 }
 
 export async function searchStudent(string) {
@@ -33,7 +37,7 @@ export async function searchStudent(string) {
         WHERE sname LIKE ?
     `, [`%${string}%`])
     console.log('hi again')
-    return row[0]
+    return row
 }
 
 export async function createStudent(sname, birthday) {
@@ -44,6 +48,9 @@ export async function createStudent(sname, birthday) {
     const id = result.insertId
     return getStudent(id)
 }
+
+
+/** EVENT ENDPOINTS */
 
 
 export async function getEvents() {
@@ -68,6 +75,9 @@ export async function createEvent(ename, edate) {
     const id = result.insertId
     return getEvent(id)
 }
+
+
+/** TEST RESULT ENDPOINTS */
 
 
 export async function getTestResults() {
@@ -119,3 +129,5 @@ export async function createTestResult(sid, eid, solve_1, solve_2, solve_3, solv
 
     return getTestResult(id)
 }
+
+searchStudent('isaac').then(data => console.log(data))

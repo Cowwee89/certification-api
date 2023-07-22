@@ -3,6 +3,7 @@ import express from 'express'
 import { 
     getStudents, 
     getStudent, 
+    searchStudent,
     createStudent,
     getEvents,
     getEvent,
@@ -26,50 +27,58 @@ app.get('/', async (req, res) => {
 })
 
 app.get("/students", async (req, res) => {
-    const students = await getStudents()
-    res.send(students)
+    const search_query = req.query.search_query
+
+    if (!search_query) {
+        const students = await getStudents()
+        res.json(students)
+    } else {
+        const students = await searchStudent(search_query)
+        res.status(201).json(students)
+        console.log('fn called')
+    }
 })
 
 app.get("/students/:id", async (req, res) => {
     const id = req.params.id
     const student = await getStudent(id)
-    res.send(student)
+    res.json(student)
 })
 
 app.post("/students", async (req, res) => {
     const { sname, birthday } = req.body
     const student = await createStudent(sname, birthday)
-    res.status(201).send(student)
+    res.status(201).json(student)
 })
 
 
 app.get("/events", async (req, res) => {
     const events = await getEvents()
-    res.send(events)
+    res.json(events)
 })
 
 app.get("/event/:id", async (req, res) => {
     const id = req.params.id
     const event = await getEvent(id)
-    res.send(event)
+    res.json(event)
 })
 
 app.post("/events", async (req, res) => {
     const { ename, edate } = req.body
     const event = await createEvent(ename, edate)
-    res.status(201).send(event)
+    res.status(201).json(event)
 })
 
 
 app.get("/testresults", async (req, res) => {
     const testresults = await getTestResults()
-    res.send(testresults)
+    res.json(testresults)
 })
 
 app.get("/testresult/:id", async (req, res) => {
     const id = req.params.id
     const testresult = await getTestResult(id)
-    res.send(testresult)
+    res.json(testresult)
 })
 
 app.post("/testresults", async (req, res) => {
@@ -78,14 +87,9 @@ app.post("/testresults", async (req, res) => {
 
     const testresults = await createTestResult(student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
         level_attempted, level_achieved, grade_achieved, name_to_be_printed)
-    res.status(201).send(testresults)
+    res.status(201).json(testresults)
 })
 
-app.get("/students/search_query=:string", async (req, res) => {
-    const string = req.params.string
-    const students = getStudents(string)
-    res.status(201).send(students)
-})
 
 app.use((err, req, res, next) => {
     console.log("error occured")
