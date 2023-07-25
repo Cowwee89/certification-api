@@ -120,7 +120,6 @@ export async function createTestResult(sid, eid, solve_1, solve_2, solve_3, solv
     getStudent(1)
         .then(data => {
             current_level = data.highest_level
-            console.log(current_level)
             if (level_achieved > current_level || current_level === undefined) {
                 pool.query(`
                     UPDATE student
