@@ -3,14 +3,15 @@ import express from 'express'
 import { 
     getStudents, 
     getStudent, 
-    searchStudent,
     createStudent,
     getEvents,
     getEvent,
     createEvent,
     getTestResults,
     getTestResult,
-    createTestResult
+    createTestResult,
+    getStudentByName,
+    getTestResultsByEvent
 } from './database.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
@@ -23,26 +24,25 @@ app.use(express.static("public"));
 app.use(cors());
 
 app.get('/', async (req, res) => {
-  res.send('hello world')
+  res.status(200).send('hello world')
 })
 
 app.get("/students", async (req, res) => {
-    const search_query = req.query.search_query
+    const sname = req.query.sname
 
-    if (!search_query) {
+    if (!sname){
         const students = await getStudents()
-        res.json(students)
+        res.status(200).json(students)
     } else {
-        const students = await searchStudent(search_query)
-        res.status(201).json(students)
-        console.log('fn called')
+        const students = await getStudentByName(sname)
+        res.status(200).json(students)
     }
 })
 
 app.get("/students/:id", async (req, res) => {
     const id = req.params.id
     const student = await getStudent(id)
-    res.json(student)
+    res.status(200).json(student)
 })
 
 app.post("/students", async (req, res) => {
@@ -54,13 +54,13 @@ app.post("/students", async (req, res) => {
 
 app.get("/events", async (req, res) => {
     const events = await getEvents()
-    res.json(events)
+    res.status(200).json(events)
 })
 
 app.get("/event/:id", async (req, res) => {
     const id = req.params.id
     const event = await getEvent(id)
-    res.json(event)
+    res.status(200).json(event)
 })
 
 app.post("/events", async (req, res) => {
@@ -71,14 +71,21 @@ app.post("/events", async (req, res) => {
 
 
 app.get("/testresults", async (req, res) => {
-    const testresults = await getTestResults()
-    res.json(testresults)
+    const eid = req.query.eid
+
+    if (!eid) {
+        const testResults = await getTestResults()
+        res.status(200).json(testResults)
+    } else {
+        const testResults = await getTestResultsByEvent(eid)
+        res.status(200).json(testResults)
+    }    
 })
 
 app.get("/testresult/:id", async (req, res) => {
     const id = req.params.id
     const testresult = await getTestResult(id)
-    res.json(testresult)
+    res.status(200).json(testresult)
 })
 
 app.post("/testresults", async (req, res) => {

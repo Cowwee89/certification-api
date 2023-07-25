@@ -30,13 +30,12 @@ export async function getStudent(id) {
     return rows[0]
 }
 
-export async function searchStudent(string) {
+export async function getStudentByName(string) {
     const [row] = await pool.query(`
         SELECT *
         FROM student
         WHERE sname LIKE ?
     `, [`%${string}%`])
-    console.log('hi again')
     return row
 }
 
@@ -94,6 +93,17 @@ export async function getTestResult(id) {
     return row[0]
 }
 
+export async function getTestResultsByEvent(eid) {
+    const [row] = await pool.query(`
+        SELECT t.student_id, s.sname, t.solve_1, t.solve_2, t.solve_3, t.solve_4, t.solve_5, t.average_of_5, 
+        t.level_attempted, t.level_achieved, t.grade_achieved, t.name_to_be_printed
+        FROM test_result t, student s
+        WHERE t.event_id = ?
+        AND t.student_id = s.id
+    `, [eid])
+    return row
+}
+
 export async function createTestResult(sid, eid, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
     level_attempted, level_achieved, grade_achieved, name_to_be_printed) {
 
@@ -129,5 +139,3 @@ export async function createTestResult(sid, eid, solve_1, solve_2, solve_3, solv
 
     return getTestResult(id)
 }
-
-searchStudent('isaac').then(data => console.log(data))
