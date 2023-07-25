@@ -12,7 +12,8 @@ import {
     createTestResult,
     getStudentByName,
     getTestResultsByEvent,
-    getTestResultsByStudent
+    getTestResultsByStudent,
+    deleteTestResult
 } from './database.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
@@ -101,6 +102,13 @@ app.post("/testresults", async (req, res) => {
         level_attempted, level_achieved, grade_achieved, name_to_be_printed)
     res.status(201).json(testresults)
 })
+
+app.delete("/testresults/:id", async (req, res) => {
+    const id = req.params.id
+    await deleteTestResult(id)
+    res.status(200)
+})
+
 
 
 app.use((err, req, res, next) => {

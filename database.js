@@ -48,6 +48,14 @@ export async function createStudent(sname, birthday) {
     return getStudent(id)
 }
 
+async function updateStudentLevel(sid, newLevel, newGrade) {
+    await pool.query(`
+        UPDATE student
+        SET highest_level = ?, best_grade = ?
+        WHERE id = ?
+    `, [newLevel, newGrade, sid])
+}
+
 
 /** EVENT ENDPOINTS */
 
@@ -128,7 +136,7 @@ export async function createTestResult(sid, eid, solve_1, solve_2, solve_3, solv
     const id = result.insertId
 
     let current_level
-    getStudent(1)
+    getStudent(sid)
         .then(data => {
             current_level = data.highest_level
             if (level_achieved > current_level || current_level === undefined) {
@@ -148,4 +156,28 @@ export async function createTestResult(sid, eid, solve_1, solve_2, solve_3, solv
     
 
     return getTestResult(id)
+}
+
+export async function deleteTestResult(id) {
+    await getTestResult(id).then(
+        (testResult) => {
+            const sid = testResult.student_id
+            let maxLevel = 0
+            let maxGrade = ''
+            getTestResultsByStudent(sid).then((data) => {
+                data.forEach((tr) => {
+                    if (tr.level_achieved > maxLevel) {
+                        maxLevel = tr.level_achieved
+                        maxGrade = tr.grade_achieved
+                    }
+                })
+                updateStudentLevel(sid, maxLevel, maxGrade)
+            })
+        }
+    )
+    
+    await pool.query(`
+        DELETE FROM test_result
+        WHERE id = ?
+    `, [id])
 }
