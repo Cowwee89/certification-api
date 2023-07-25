@@ -11,7 +11,8 @@ import {
     getTestResult,
     createTestResult,
     getStudentByName,
-    getTestResultsByEvent
+    getTestResultsByEvent,
+    getTestResultsByStudent
 } from './database.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
@@ -72,14 +73,18 @@ app.post("/events", async (req, res) => {
 
 app.get("/testresults", async (req, res) => {
     const eid = req.query.eid
+    const sid = req.query.sid
 
-    if (!eid) {
+    if (!eid && !sid) {
         const testResults = await getTestResults()
         res.status(200).json(testResults)
-    } else {
+    } else if (!sid) {
         const testResults = await getTestResultsByEvent(eid)
         res.status(200).json(testResults)
-    }    
+    } else if (!eid) {
+        const testResults = await getTestResultsByStudent(sid)
+        res.status(200).json(testResults)
+    }
 })
 
 app.get("/testresult/:id", async (req, res) => {
