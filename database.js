@@ -86,6 +86,24 @@ export async function getEvent(id) {
     return row[0]
 }
 
+export async function getEventsBeforeDate(date) {
+    const [row] = await pool.query(`
+        SELECT *
+        FROM event
+        WHERE edate <= ?
+    `, [date])
+    return row[0]
+}
+
+export async function getEventsAfterDate(date) {
+    const [row] = await pool.query(`
+        SELECT *
+        FROM event
+        WHERE edate >= ?
+    `, [date])
+    return row[0]
+}
+
 export async function createEvent(ename, edate) {
     const [result] = await pool.query(`
         INSERT INTO event (ename, edate)

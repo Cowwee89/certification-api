@@ -15,7 +15,9 @@ import {
     getStudentByName,
     getTestResultsByEvent,
     getTestResultsByStudent,
-    deleteTestResult
+    deleteTestResult,
+    getEventsBeforeDate,
+    getEventsAfterDate
 } from './database.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
@@ -58,7 +60,7 @@ app.get("/students/:id", async (req, res) => {
 app.delete("/students/:id", async (req, res) => {
     const id = req.params.id
     await deleteStudent(id)
-    res.status(200)
+    res.status(200).send();
 })
 
 
@@ -69,8 +71,22 @@ app.post("/events", async (req, res) => {
 })
 
 app.get("/events", async (req, res) => {
-    const events = await getEvents()
-    res.status(200).json(events)
+    const before = req.query.before
+    const after = req.query.after
+
+    if (!before && !after){
+        const events = await getEvents()
+        res.status(200).json(events)
+        console.log('none')
+    } else if (!after) {
+        const events = await getEventsBeforeDate(before)
+        res.status(200).json(events)
+        console.log('before')
+    } else if (!before) {
+        const events = await getEventsAfterDate(after)
+        res.status(200).json(events)
+        console.log('after')
+    }
 })
 
 app.get("/events/:id", async (req, res) => {
@@ -82,7 +98,7 @@ app.get("/events/:id", async (req, res) => {
 app.delete("/events/:id", async (req, res) => {
     const id = req.params.id
     await deleteEvent(id)
-    res.status(201)
+    res.status(200).send();
 })
 
 
@@ -120,7 +136,7 @@ app.get("/testresults/:id", async (req, res) => {
 app.delete("/testresults/:id", async (req, res) => {
     const id = req.params.id
     await deleteTestResult(id)
-    res.status(200)
+    res.status(200).send()
 })
 
 
