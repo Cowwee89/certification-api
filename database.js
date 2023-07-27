@@ -92,7 +92,7 @@ export async function getEventsBeforeDate(date) {
         FROM event
         WHERE edate <= ?
     `, [date])
-    return row[0]
+    return row
 }
 
 export async function getEventsAfterDate(date) {
@@ -101,7 +101,7 @@ export async function getEventsAfterDate(date) {
         FROM event
         WHERE edate >= ?
     `, [date])
-    return row[0]
+    return row
 }
 
 export async function createEvent(ename, edate) {
