@@ -4,6 +4,7 @@ import {
     getStudents, 
     getStudent, 
     createStudent,
+    deleteStudent,
     getEvents,
     getEvent,
     createEvent,
@@ -29,6 +30,12 @@ app.get('/', async (req, res) => {
   res.status(200).send('hello world')
 })
 
+app.post("/students", async (req, res) => {
+    const { sname, birthday } = req.body
+    const student = await createStudent(sname, birthday)
+    res.status(201).json(student)
+})
+
 app.get("/students", async (req, res) => {
     const sname = req.query.sname
 
@@ -47,23 +54,12 @@ app.get("/students/:id", async (req, res) => {
     res.status(200).json(student)
 })
 
-app.post("/students", async (req, res) => {
-    const { sname, birthday } = req.body
-    const student = await createStudent(sname, birthday)
-    res.status(201).json(student)
-})
-
-
-app.get("/events", async (req, res) => {
-    const events = await getEvents()
-    res.status(200).json(events)
-})
-
-app.get("/event/:id", async (req, res) => {
+app.delete("/students/:id", async (req, res) => {
     const id = req.params.id
-    const event = await getEvent(id)
-    res.status(200).json(event)
+    await deleteStudent(id)
+    res.status(200)
 })
+
 
 app.post("/events", async (req, res) => {
     const { ename, edate } = req.body
@@ -71,6 +67,26 @@ app.post("/events", async (req, res) => {
     res.status(201).json(event)
 })
 
+app.get("/events", async (req, res) => {
+    const events = await getEvents()
+    res.status(200).json(events)
+})
+
+app.get("/events/:id", async (req, res) => {
+    const id = req.params.id
+    const event = await getEvent(id)
+    res.status(200).json(event)
+})
+
+
+app.post("/testresults", async (req, res) => {
+    const { student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
+        level_attempted, level_achieved, grade_achieved, name_to_be_printed } = req.body
+
+    const testresults = await createTestResult(student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
+        level_attempted, level_achieved, grade_achieved, name_to_be_printed)
+    res.status(201).json(testresults)
+})
 
 app.get("/testresults", async (req, res) => {
     const eid = req.query.eid
@@ -88,19 +104,10 @@ app.get("/testresults", async (req, res) => {
     }
 })
 
-app.get("/testresult/:id", async (req, res) => {
+app.get("/testresults/:id", async (req, res) => {
     const id = req.params.id
     const testresult = await getTestResult(id)
     res.status(200).json(testresult)
-})
-
-app.post("/testresults", async (req, res) => {
-    const { student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
-        level_attempted, level_achieved, grade_achieved, name_to_be_printed } = req.body
-
-    const testresults = await createTestResult(student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
-        level_attempted, level_achieved, grade_achieved, name_to_be_printed)
-    res.status(201).json(testresults)
 })
 
 app.delete("/testresults/:id", async (req, res) => {
@@ -108,7 +115,6 @@ app.delete("/testresults/:id", async (req, res) => {
     await deleteTestResult(id)
     res.status(200)
 })
-
 
 
 app.use((err, req, res, next) => {

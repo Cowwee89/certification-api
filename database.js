@@ -56,6 +56,17 @@ async function updateStudentLevel(sid, newLevel, newGrade) {
     `, [newLevel, newGrade, sid])
 }
 
+export async function deleteStudent(id) {
+    await pool.query(`
+        DELETE FROM test_result
+        WHERE student_id = ?
+    `, [id])
+
+    await pool.query(`
+        DELETE FROM student
+        WHERE id = ?
+    `, [id])
+}
 
 /** EVENT ENDPOINTS */
 
