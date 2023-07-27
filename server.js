@@ -8,6 +8,7 @@ import {
     getEvents,
     getEvent,
     createEvent,
+    deleteEvent,
     getTestResults,
     getTestResult,
     createTestResult,
@@ -76,6 +77,12 @@ app.get("/events/:id", async (req, res) => {
     const id = req.params.id
     const event = await getEvent(id)
     res.status(200).json(event)
+})
+
+app.delete("/events/:id", async (req, res) => {
+    const id = req.params.id
+    await deleteEvent(id)
+    res.status(201)
 })
 
 

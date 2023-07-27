@@ -68,6 +68,7 @@ export async function deleteStudent(id) {
     `, [id])
 }
 
+
 /** EVENT ENDPOINTS */
 
 
@@ -92,6 +93,18 @@ export async function createEvent(ename, edate) {
     `, [ename, edate])
     const id = result.insertId
     return getEvent(id)
+}
+
+export async function deleteEvent(id) {
+    await pool.query(`
+        DELETE FROM test_result
+        WHERE event_id = ?
+    `, [id])
+
+    await pool.query(`
+        DELETE FROM event
+        WHERE id = ?
+    `, [id])
 }
 
 
