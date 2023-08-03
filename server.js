@@ -104,10 +104,10 @@ app.delete("/events/:id", async (req, res) => {
 
 app.post("/testresults", async (req, res) => {
     const { student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
-        level_attempted, level_achieved, grade_achieved, name_to_be_printed } = req.body
+        level_attempted, grade_attempted, result, name_to_be_printed } = req.body
 
     const testresults = await createTestResult(student_id, event_id, solve_1, solve_2, solve_3, solve_4, solve_5, average_of_5, 
-        level_attempted, level_achieved, grade_achieved, name_to_be_printed)
+        level_attempted, grade_attempted, result, name_to_be_printed)
     res.status(201).json(testresults)
 })
 
