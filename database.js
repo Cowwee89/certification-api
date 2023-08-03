@@ -131,7 +131,7 @@ export async function deleteEvent(id) {
 
 export async function getTestResults() {
     const [rows] = await pool.query(`
-        SELECT t.student_id, s.sname, t.event_id, e.ename, t.solve_1, t.solve_2, t.solve_3, t.solve_4, t.solve_5, t.average_of_5, 
+        SELECT t.id, t.student_id, s.sname, t.event_id, e.ename, t.solve_1, t.solve_2, t.solve_3, t.solve_4, t.solve_5, t.average_of_5, 
         t.level_attempted, t.level_achieved, t.grade_achieved, t.name_to_be_printed
         FROM test_result t, student s, event e
         WHERE t.student_id = s.id
@@ -142,19 +142,14 @@ export async function getTestResults() {
 
 export async function getTestResult(id) {
     const [row] = await pool.query(`
-        SELECT t.student_id, s.sname, t.event_id, e.ename, t.solve_1, t.solve_2, t.solve_3, t.solve_4, t.solve_5, t.average_of_5, 
-        t.level_attempted, t.level_achieved, t.grade_achieved, t.name_to_be_printed
-        FROM test_result t, student s, event e
-        WHERE t.event_id = ?
-        AND t.student_id = s.id
-        AND t.event_id = e.id
+        SELECT * FROM test_result WHERE id = ?
     `, [id])
     return row[0]
 }
 
 export async function getTestResultsByEvent(eid) {
     const [row] = await pool.query(`
-        SELECT t.student_id, s.sname, t.solve_1, t.solve_2, t.solve_3, t.solve_4, t.solve_5, t.average_of_5, 
+        SELECT t.id, t.student_id, s.sname, t.solve_1, t.solve_2, t.solve_3, t.solve_4, t.solve_5, t.average_of_5, 
         t.level_attempted, t.level_achieved, t.grade_achieved, t.name_to_be_printed
         FROM test_result t, student s
         WHERE t.event_id = ?
@@ -165,7 +160,7 @@ export async function getTestResultsByEvent(eid) {
 
 export async function getTestResultsByStudent(sid) {
     const [row] = await pool.query(`
-        SELECT e.edate, t.event_id, e.ename, t.solve_1, t.solve_2, t.solve_3, t.solve_4, t.solve_5, t.average_of_5, 
+        SELECT t.id, e.edate, t.event_id, e.ename, t.solve_1, t.solve_2, t.solve_3, t.solve_4, t.solve_5, t.average_of_5, 
         t.level_attempted, t.level_achieved, t.grade_achieved, t.name_to_be_printed
         FROM test_result t, event e
         WHERE t.student_id = ?
@@ -210,9 +205,10 @@ export async function createTestResult(sid, eid, solve_1, solve_2, solve_3, solv
 }
 
 export async function deleteTestResult(id) {
-    await getTestResult(id).then(
+    getTestResult(id).then(
         (testResult) => {
             const sid = testResult.student_id
+            console.log(sid)
             let maxLevel = 0
             let maxGrade = ''
             getTestResultsByStudent(sid).then((data) => {
@@ -222,13 +218,14 @@ export async function deleteTestResult(id) {
                         maxGrade = tr.grade_achieved
                     }
                 })
-                updateStudentLevel(sid, maxLevel, maxGrade)
+                if (maxLevel !== 0) updateStudentLevel(sid, maxLevel, maxGrade) 
+                else updateStudentLevel(sid, null, '')
             })
         }
-    )
-    
-    await pool.query(`
+    ).then(() => {
+        pool.query(`
         DELETE FROM test_result
         WHERE id = ?
     `, [id])
+    })
 }
